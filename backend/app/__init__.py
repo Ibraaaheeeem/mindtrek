@@ -19,3 +19,7 @@ def create_app():
     migrate.init_app(app, db)
 
     return app
+
+from .models.categories import Category, Subcategory, Subject, Unit
+from .models.question import Question
+from .models.social import User, Comment, Attempt, MockSubject, ExamSubjects
