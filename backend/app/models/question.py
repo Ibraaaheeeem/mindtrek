@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class Question(db.Model):
-    __tablename__ = 'mcq_questions'
+    __tablename__ = 'questions'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     question_text = db.Column(db.String(1024), nullable=False)
@@ -18,7 +18,7 @@ class Question(db.Model):
     option_c = db.Column(db.String(512))
     option_d = db.Column(db.String(512))
     option_e = db.Column(db.String(512))
-    
+
     tags = db.Column(ARRAY(db.String(124)))
     correct_options = db.Column(ARRAY(db.CHAR), nullable=False)
     explanation = db.Column(db.String(1024))
