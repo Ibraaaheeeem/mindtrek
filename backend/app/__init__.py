@@ -11,7 +11,7 @@ def create_app():
     app = Flask(__name__)
 
     # Configure database URL from environment variable
-    database_url = os.environ.get('DATABASE_URL')
+    database_url = os.environ.get('ALX_DB_URL')
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
     # Initialize db and migrate with the app
