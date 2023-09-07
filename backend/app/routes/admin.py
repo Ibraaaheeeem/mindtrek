@@ -1,13 +1,15 @@
 import random
 import pandas as pd
 from flask import Blueprint, render_template, jsonify, request
-from models.questions import Category, Subcategory, Subject, MCQQuestion, Unit
+from ..models.categories import Category, Subcategory, Subject, Unit
+from ..models.question import Question
+
 from app import db
 
 admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/category', methods=['POST'])
+@admin_bp.route('/categories', methods=['POST'])
 def new_category():
     """
     Creates a new category in database
@@ -26,10 +28,10 @@ def new_category():
         db.session.commit()
         return jsonify({"info": "Category added successfully"})
     else:
-        return jsonify({"info": "Category exists already"})
+        return jsonify({"info": "Category exists already", "id": categoryexists.id})
 
 
-@admin_bp.route('/subcategory', methods=['POST'])
+@admin_bp.route('/subcategories', methods=['POST'])
 def new_subcategory():
     """
     Creates a new subcategory in database
@@ -60,7 +62,7 @@ def new_subcategory():
     else:
         return jsonify({"info": "SubCategory exists already", "id": subcategoryexists.id})
 
-@admin_bp.route('/subject', methods=['POST'])
+@admin_bp.route('/subjects', methods=['POST'])
 def new_subject():
     """
     Creates a new subject in database
@@ -94,7 +96,7 @@ def new_subject():
         return jsonify({"info": "Subject exists already", "id": subjectexists.id})
 
 
-@admin_bp.route('/unit', methods=['POST'])
+@admin_bp.route('/units', methods=['POST'])
 def new_unit():
     """
     Creates a new unit in database
@@ -152,7 +154,7 @@ def upload_questions():
                 print(row[1])
                 continue
             print(row[0])
-            question = MCQQuestion(
+            question = Question(
                 unit_id=unit_id,
                 subject_id=subject_id,
                 subcategory_id=subcategory_id,
