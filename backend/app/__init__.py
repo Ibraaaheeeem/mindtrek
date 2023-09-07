@@ -31,10 +31,11 @@ def create_app():
 
     from .routes.auth import auth_bp
     from .routes.quiz import quiz_bp
+    from .routes.admin import admin_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(quiz_bp, url_prefix='/quiz')
-    
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     return app
 
