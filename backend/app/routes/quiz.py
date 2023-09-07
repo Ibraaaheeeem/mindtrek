@@ -1,0 +1,108 @@
+import random
+import pandas as pd
+from flask import Blueprint, jsonify, request
+from app import db, jwt
+from ..models.social import User
+from ..models.categories import Category, Subcategory, Subject, Unit
+from ..models.question import Question
+
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
+quiz_bp = Blueprint('quiz', __name__)
+
+@quiz_bp.route('/categories', methods=['GET'])
+def get_categories():
+    """
+    Returns a list of all the categories in the database
+
+    """
+    categories = Category.query.all()
+    category_list = [{'id': category.id, 'name': category.name}
+                     for category in categories]
+    return jsonify(category_list)
+
+
+@quiz_bp.route('/subcategories/<int:category_id>', methods=['GET'])
+def get_subcategories(category_id):
+    """
+    Returns a list of all the subcategories in the database
+    under the specified category id
+
+    """
+    subcategories = Subcategory.query.filter_by(category_id=category_id).all()
+    subcategory_list = [{'id': subcategory.id, 'name': subcategory.name}
+                        for subcategory in subcategories]
+    return jsonify(subcategory_list)
+
+
+@quiz_bp.route('/subjects/<int:subcategory_id>', methods=['GET'])
+def get_subjects(subcategory_id):
+    """
+    Returns a list of all the subjects in the database
+    under the specified subcategory id
+
+    """
+    subjects = Subject.query.filter_by(subcategory_id=subcategory_id).all()
+    subject_list = [{'id': subject.id, 'name': subject.name}
+                    for subject in subjects]
+    return jsonify(subject_list)
+
+
+@quiz_bp.route('/units/<int:subject_id>', methods=['GET'])
+def get_units(subject_id):
+    """
+    Returns a list of all the units in the database
+    under the specified subject id
+
+    """
+    units = Unit.query.filter_by(subject_id=subject_id).all()
+    unit_list = [{'id': unit.id, 'name': unit.name}
+                 for unit in units]
+    print(unit_list)
+    return jsonify(unit_list)
+
+
+@quiz_bp.route('/questions/category/<int:category_id>/subcategory/<int:subcategory_id>/subject/<int:subject_id>/unit/<int:unit_id>', methods=['GET'])
+def get_questions(category_id, subcategory_id, subject_id, unit_id):
+    """
+    Returns a speciifed number of questions that
+    satisifes the paremeters. The highest category
+    level will be used in selecting the questions.
+    When questions of higher specificity are needed,
+    the lower heirarchy should be utilised
+    """
+    category_id = int(request.args.get('category_id', 0))
+    subcategory_id = int(request.args.get('subcategory_id', 0))
+    subject_id = int(request.args.get('subject_id', 0))
+    unit_id = int(request.args.get('unit_id', 0))
+    n = int(request.args.get('n', 1))
+    
+    if category_id != 0:
+        questions = Question.query.filter_by(category_id=category_id).all()
+    elif subcategory_id != 0:
+        questions = Question.query.filter_by(
+            subcategory_id=subcategory_id).all()
+    elif subject_id != 0:
+        questions = Question.query.filter_by(subject_id=subject_id).all()
+    elif unit_id != 0:
+        questions = Question.query.filter_by(unit_id=unit_id).all()
+
+    random_questions = random.sample(questions, min(n, len(questions)))
+
+    question_data_list = []
+    for question in random_questions:
+        question_data = {
+            'id': question.id,
+            'question_text': question.question_text,
+            'option_a': question.option_a,
+            'option_b': question.option_b,
+            'option_c': question.option_c,
+            'option_d': question.option_d,
+            'option_e': question.option_e,
+            'tags': question.tags,
+            'correct_options': question.correct_options,
+            'explanation': question.explanation
+        }
+        question_data_list.append(question_data)
+    return jsonify(question_data_list)
+
