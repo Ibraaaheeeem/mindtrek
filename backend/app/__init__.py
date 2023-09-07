@@ -30,7 +30,11 @@ def create_app():
     jwt.init_app(app)
 
     from .routes.auth import auth_bp
+    from .routes.quiz import quiz_bp
+
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(quiz_bp, url_prefix='/quiz')
+    
 
     return app
 
