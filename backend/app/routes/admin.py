@@ -138,9 +138,9 @@ def upload_questions():
     subcategory_id = data.get("subcategory_id")
     category_id = data.get("category_id")
 
-    questionsCSV = data.get("questions")
-    questions = questionsCSV.splitlines()
-    
+    questions = data.get("questions").splitlines()
+    addition_counter = 0
+    error_counter = 0
     if not questions:
         return jsonify({"error": "No questions data"}), 400
     try:
@@ -151,7 +151,7 @@ def upload_questions():
             # print(qrow)
             row = qrow.split("||")
             if len(row) < 9:
-                print(row[1])
+                error_counter += 1
                 continue
             print(row[0])
             question = Question(
@@ -170,7 +170,8 @@ def upload_questions():
                 explanation=row[8]
             )
             db.session.add(question)
+            addition_counter += 1
         db.session.commit()
-        return jsonify({"message": "Questions data uploaded successfully"}), 201
+        return jsonify({"message": "Questions data uploaded successfully","received": len(questions), "added": addition_counter, "error": error_counter}), 201
     except Exception as e:
         return jsonify({"error": f"Error processing Questions data: {str(e)}"}), 500
