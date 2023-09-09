@@ -14,6 +14,7 @@ class Comment(db.Model):
     likes = db.Column(db.Integer, default=0)
     quotes = db.Column(db.Integer, default=0)
     replies = db.Column(db.Integer, default=0)
+    edited = db.Column(db.Boolean, default=False)
     question = db.relationship('Question', back_populates='comments')
     user = db.relationship('User', back_populates='comments')
     subcomments = db.relationship('Subcomment', back_populates='comment', cascade='all, delete-orphan')
@@ -32,6 +33,7 @@ class Subcomment(db.Model):
         'comments.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    edited = db.Column(db.Boolean, default=False)
     comment = db.relationship('Comment', back_populates='subcomments')
     
     def __repr__(self):
