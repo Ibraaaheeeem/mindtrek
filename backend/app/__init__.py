@@ -34,14 +34,15 @@ def create_app():
     from .routes.quiz import quiz_bp
     from .routes.admin import admin_bp
     from .routes.attempt import attempt_bp
+    from .routes.comment import comment_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(quiz_bp, url_prefix='/quiz')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(attempt_bp, url_prefix='/attempt')
+    app.register_blueprint(comment_bp, url_prefix='/discussion')
     return app
 
 from .models.categories import Category, Subcategory, Subject, Unit
 from .models.question import Question
 from .models.social import User, Comment, Attempt, MockSubject
-
