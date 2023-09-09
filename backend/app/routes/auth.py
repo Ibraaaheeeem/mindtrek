@@ -1,4 +1,5 @@
 import bcrypt
+from datetime import timedelta
 from flask import Blueprint, jsonify, request
 from app import db, jwt
 from ..models.social import User
@@ -45,7 +46,8 @@ def login():
     print(stored_hashed_password)
     
     if userexists != None and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
-        access_token = create_access_token(identity=username)
+        token_tenure = timedelta(days=7)
+        access_token = create_access_token(identity=username, fresh=True, expires_delta=token_tenure)
         return jsonify({"access_token": access_token}), 200
     return jsonify({"message": "Invalid credentials"}), 401
 
