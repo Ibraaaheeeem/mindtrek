@@ -14,9 +14,9 @@ class Comment(db.Model):
     likes = db.Column(db.Integer, default=0)
     quotes = db.Column(db.Integer, default=0)
     replies = db.Column(db.Integer, default=0)
-    question = db.relationship('Question', backref='comments')
+    question = db.relationship('Question', back_populates='comments')
     user = db.relationship('User', back_populates='comments')
-    subcomments = db.relationship('Subcomment', back_populates='comment')
+    subcomments = db.relationship('Subcomment', back_populates='comment', cascade='all, delete-orphan')
     
 
     def __repr__(self):
@@ -47,7 +47,7 @@ class User(db.Model):
     password = db.Column(db.String(500), nullable=False)
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen_date = db.Column(db.DateTime, default=datetime.utcnow)
-    attempts = db.relationship('Attempt', back_populates='user')
+    attempts = db.relationship('Attempt', back_populates='user', cascade='all, delete-orphan')
     comments = db.relationship('Comment', back_populates='user')
 
     def __repr__(self):
@@ -82,6 +82,7 @@ class Attempt(db.Model):
     user = db.relationship('User', back_populates='attempts')
     # Define a many-to-many relationship between Attempt and MockSubject
     subjects_taken = db.relationship('MockSubject', secondary='exam_subjects',
+                                     single_parent=True, cascade='all, delete-orphan',
                                      back_populates='attempts_taken')
 
     def add_mock_subject(self, mock_subject):

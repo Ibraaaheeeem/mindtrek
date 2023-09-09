@@ -23,5 +23,8 @@ class Question(db.Model):
     correct_options = db.Column(ARRAY(db.CHAR), nullable=False)
     explanation = db.Column(db.String(1024))
 
+    comments = db.relationship('Comment', back_populates='question', cascade='all, delete-orphan')
+
+
     def __repr__(self):
         return f'<Question {self.question_text}>'
