@@ -71,12 +71,8 @@ def get_questions(category_id, subcategory_id, subject_id, unit_id):
     When questions of higher specificity are needed,
     the lower heirarchy should be utilised
     """
-    category_id = int(request.args.get('category_id', 0))
-    subcategory_id = int(request.args.get('subcategory_id', 0))
-    subject_id = int(request.args.get('subject_id', 0))
-    unit_id = int(request.args.get('unit_id', 0))
     n = int(request.args.get('n', 1))
-    
+    questions = None
     if category_id != 0:
         questions = Question.query.filter_by(category_id=category_id).all()
     elif subcategory_id != 0:
@@ -87,6 +83,8 @@ def get_questions(category_id, subcategory_id, subject_id, unit_id):
     elif unit_id != 0:
         questions = Question.query.filter_by(unit_id=unit_id).all()
 
+    if questions == None:
+        return jsonify({"message": "No questions found"})
     random_questions = random.sample(questions, min(n, len(questions)))
 
     question_data_list = []
