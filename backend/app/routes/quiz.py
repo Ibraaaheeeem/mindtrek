@@ -104,3 +104,24 @@ def get_questions(category_id, subcategory_id, subject_id, unit_id):
         question_data_list.append(question_data)
     return jsonify(question_data_list)
 
+@quiz_bp.route('/question/<int:question_id>/comments', methods=['GET'])
+def get_comments(question_id):
+    """
+    Returns a list of all the comments
+    related to the question with its id
+    """
+    try:
+        question = Question.query.get(question_id)
+        comments = question.comments
+        comments_list = [{"id": comment.id,
+                          "text": comment.text,
+                          "author": comment.user.username,
+                          "likes": comment.likes,
+                          "quotes": comment.quotes,
+                          "replies": len(comment.subcomments),
+                          "edited": comment.edited
+                          } for comment in comments]
+        return jsonify(comments_list), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
