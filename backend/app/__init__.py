@@ -1,6 +1,3 @@
-from .models.categories import Category, Subcategory, Subject, Unit
-from .models.social import User, Comment, Attempt, MockSubject
-from .models.question import Question
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -13,9 +10,8 @@ db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 
-
 def create_app():
-
+    
     app = Flask(__name__)
 
     # Configure database URL from environment variable
@@ -38,9 +34,14 @@ def create_app():
     from .routes.quiz import quiz_bp
     from .routes.admin import admin_bp
     from .routes.attempt import attempt_bp
-
+    
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(quiz_bp, url_prefix='/quiz')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(attempt_bp, url_prefix='/attempt')
     return app
+
+from .models.categories import Category, Subcategory, Subject, Unit
+from .models.question import Question
+from .models.social import User, Comment, Attempt, MockSubject
+
