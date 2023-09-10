@@ -393,7 +393,7 @@
                 var subcategory_id = $("#subcategory-dropdown").val();
                 var category_id = $("#category-dropdown").val();
                 var new_unit = $("#new-unit").val();
-                var questionsCSV = $("#questions-csv").val();
+                var questions = $("#questions-csv").val();
 
                 // Prepare data to be posted
                 var postData = {
@@ -402,7 +402,7 @@
                     subcategory_id: subcategory_id,
                     category_id: category_id,
                     new_unit: new_unit,
-                    questionsCSV: questionsCSV
+                    questions: questions
                 };
 
                 // POST data to the desired URL
@@ -414,10 +414,7 @@
 
                     success: function (response) {
                         console.log("Upload response:", response);
-                        $("#unit-dropdown").empty()
-                        response.units.forEach(function (unit) {
-                            $("#unit-dropdown").append("<option value='" + unit.id + "'>" + unit.name + "</option>");
-                        });
+                        $("#info").text(response)
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         console.error("Error:", errorThrown);
