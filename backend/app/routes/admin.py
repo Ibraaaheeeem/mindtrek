@@ -220,3 +220,10 @@ def delete_question(question_id):
         return jsonify({"message": "Question ${question_id} deleted successfully"}), 204
     else:
         return jsonify({"message": "Question ${question_id} not found"}), 404
+    
+    @admin_bp.route('/upload-form', methods=['GET'])
+def show_upload_form():
+    categories = Category.query.all()
+    categories_list = [{'id': category.id, 'name': category.name}
+                     for category in categories]
+    return render_template('upload-form.html', categories=categories_list)
