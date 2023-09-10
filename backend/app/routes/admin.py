@@ -26,9 +26,9 @@ def new_category():
         category = Category(name=category_name)
         db.session.add(category)
         db.session.commit()
-        return jsonify({"info": "Category added successfully"})
+        return jsonify({"info": "Category added successfully", "id": category.id, "name":category.name}), 201
     else:
-        return jsonify({"info": "Category exists already", "id": categoryexists.id})
+        return jsonify({"info": "Category exists already", "id": categoryexists.id}), 409
 
 
 @admin_bp.route('/subcategories', methods=['POST'])
@@ -48,7 +48,7 @@ def new_subcategory():
     category_id = data.get("category_id")
     categoryexists = Category.query.filter_by(id=category_id).first()
     if categoryexists == None:
-        return jsonify({"info": "Specified category does not exist"})
+        return jsonify({"info": "Specified category does not exist"}),404
     
     subcategoryexists = Subcategory.query.filter_by(
         name=subcategory_name, category_id=category_id).first()
@@ -58,9 +58,9 @@ def new_subcategory():
         )
         db.session.add(subcategory)
         db.session.commit()
-        return jsonify({"info": "Subcategory added successfully"})
+        return jsonify({"id": subcategory.id, "name":subcategory.name}), 201
     else:
-        return jsonify({"info": "SubCategory exists already", "id": subcategoryexists.id})
+        return jsonify({"info": "SubCategory exists already", "id": subcategoryexists.id}), 409
 
 @admin_bp.route('/subjects', methods=['POST'])
 def new_subject():
@@ -80,7 +80,7 @@ def new_subject():
 
     subcategoryexists = Subcategory.query.filter_by(id=subcategory_id).first()
     if subcategoryexists == None:
-        return jsonify({"info": "Specified subcategory does not exist"})
+        return jsonify({"info": "Specified subcategory does not exist"}), 404
     
     
     subjectexists = Subject.query.filter_by(
@@ -91,9 +91,9 @@ def new_subject():
         )
         db.session.add(subject)
         db.session.commit()
-        return jsonify({"info": "Subject added successfully"})
+        return jsonify({"id": subject.id, "name": subject.name}), 201
     else:
-        return jsonify({"info": "Subject exists already", "id": subjectexists.id})
+        return jsonify({"info": "Subject exists already", "id": subjectexists.id}), 409
 
 
 @admin_bp.route('/units', methods=['POST'])
@@ -112,9 +112,7 @@ def new_unit():
     subject_id = data.get("subject_id")
     subjectexists = Subject.query.filter_by(id=subject_id).first()
     if subjectexists == None:
-        return jsonify({"info": "Specified subject does not exist"})
-    
-    
+        return jsonify({"info": "Specified subject does not exist"}), 404
     unitexists = Unit.query.filter_by(
         name=unit_name, subject_id=subject_id).first()
     if unitexists is None:
@@ -123,9 +121,9 @@ def new_unit():
         )
         db.session.add(unit)
         db.session.commit()
-        return jsonify({"info": "Unit added successfully"})
+        return jsonify({"id": unit.id, "name": unit.name}), 201
     else:
-        return jsonify({"info": "Unit exists already", "id": unitexists.id})
+        return jsonify({"info": "Unit exists already", "id": unitexists.id}), 409
 
 @admin_bp.route('/questions', methods=['POST'])
 def upload_questions():
@@ -144,11 +142,8 @@ def upload_questions():
     if not questions:
         return jsonify({"error": "No questions data"}), 400
     try:
-        # csv_data = pd.read_csv(pd.compat.StringIO(questionsCSV))
-        # print(len(questions))
-        # print(f"{unit_id}-{subject_id}-{subcategory_id}-{category_id}")
+        
         for qrow in questions:
-            # print(qrow)
             row = qrow.split("||")
             if len(row) < 9:
                 error_counter += 1
@@ -175,3 +170,4 @@ def upload_questions():
         return jsonify({"message": "Questions data uploaded successfully","received": len(questions), "added": addition_counter, "error": error_counter}), 201
     except Exception as e:
         return jsonify({"error": f"Error processing Questions data: {str(e)}"}), 500
+    
