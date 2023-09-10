@@ -171,3 +171,52 @@ def upload_questions():
     except Exception as e:
         return jsonify({"error": f"Error processing Questions data: {str(e)}"}), 500
     
+@admin_bp.route('/category/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    category = Category.query.get(category_id)
+    if category:
+        db.session.delete(category)
+        db.session.commit()
+        return jsonify({"message": "Category ${category.name} deleted successfully"}), 204
+    else:
+        return jsonify({"message": "Category ${category.name} not found"}), 404
+
+@admin_bp.route('/subcategory/<int:subcategory_id>', methods=['DELETE'])
+def delete_subcategory(subcategory_id):
+    subcategory = Subcategory.query.get(subcategory_id)
+    if subcategory:
+        db.session.delete(subcategory)
+        db.session.commit()
+        return jsonify({"message": "Subcategory ${subcategory.name} deleted successfully"}), 204
+    else:
+        return jsonify({"message": "Subcategory ${subcategory.name} not found"}), 404
+
+@admin_bp.route('/subject/<int:subject_id>', methods=['DELETE'])
+def delete_subject(subject_id):
+    subject = Subject.query.get(subject_id)
+    if subject:
+        db.session.delete(subject)
+        db.session.commit()
+        return jsonify({"message": "Subject ${subject.name} deleted successfully"}), 204
+    else:
+        return jsonify({"message": "Subject ${subject.name} not found"}), 404
+
+@admin_bp.route('/unit/<int:unit_id>', methods=['DELETE'])
+def delete_unit(unit_id):
+    unit = Unit.query.get(unit_id)
+    if unit:
+        db.session.delete(unit)
+        db.session.commit()
+        return jsonify({"message": "Unit ${unit.name} deleted successfully"}), 204
+    else:
+        return jsonify({"message": "Unit ${unit.name} not found"}), 404
+
+@admin_bp.route('/question/<int:question_id>', methods=['DELETE'])
+def delete_question(question_id):
+    question = Question.query.get(question_id)
+    if question:
+        db.session.delete(question_id)
+        db.session.commit()
+        return jsonify({"message": "Question ${question_id} deleted successfully"}), 204
+    else:
+        return jsonify({"message": "Question ${question_id} not found"}), 404
