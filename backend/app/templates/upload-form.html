@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Questions Upload form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 50;
+            padding: 10;
+            justify-content: center;
+        }
+
+        .left {
+            width: 50%;
+            float: left;
+            background-color: lightblue;
+            height: 100vh;
+
+
+        }
+
+        .right {
+            width: 50%;
+            float: left;
+            justify-content: center;
+            background-color: lightgreen;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        select,
+        button,
+        input {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #fff;
+            width: 40%;
+        }
+
+
+        .uploadbutton,
+        textarea {
+            width: 100%;
+        }
+
+        div {
+            display: block;
+            width: 100%;
+        }
+
+        #new-unit-button,
+        #upload-button,
+        #new-category-button,
+        #new-subcategory-button,
+        #new-subject-button {
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #remove-category-button,
+        #remove-subcategory-button,
+        #remove-subject-button,
+        #remove-unit-button {
+            background-color: #FF4444;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #new-unit-button:hover,
+        #upload-button:hover {
+            background-color: #0056b3;
+        }
+
+        #questions-csv {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Select Categories and Subcategories</h1>
+
+    <div class="left">
+        <div class="row">
+            <select id="category-dropdown">
+                <option value="" selected disabled>Select a Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <button id="remove-category-button" disabled>Remove Category</button>
+        </div>
+        <div class="row">
+            <input type="text" id="new-category" />
+            <button id="new-category-button">Add Category</button>
+        </div>
+        <div class="row">
+            <select id="subcategory-dropdown">
+                <option value="" selected disabled>Select a Subcategory</option>
+            </select>
+            <button id="remove-subcategory-button" disabled>Remove Subcategory</button>
+        </div>
+        <div class="row">
+            <input type="text" id="new-subcategory" />
+            <button id="new-subcategory-button">Add Subcategory</button>
+        </div>
+        <div class="row">
+            <select id="subject-dropdown">
+                <option value="" selected disabled>Select a Subject</option>
+            </select>
+            <button id="remove-subject-button" disabled>Remove Subject</button>
+        </div>
+        <div class="row">
+            <input type="text" id="new-subject" />
+            <button id="new-subject-button">Add Subject</button>
+
+        </div>
+        <div class="row">
+            <select id="unit-dropdown">
+                <option value="" selected disabled>Select a Unit</option>
+            </select>
+            <button id="remove-unit-button" disabled>Remove Unit</button>
+        </div>
+        <div class="row">
+            <input type="text" id="new-unit" />
+            <button id="new-unit-button">Add Unit</button>
+        </div>
+        <textarea id="questions-csv"></textarea>
+        <button id="upload-button" class="uploadbutton">Upload</button>
+    </div>
+    <div class="right">
+        <label id="info">Info</label>
+    </div>
+    <script>
+
+        function isValidString(input) {
+            var validPattern = /^[a-zA-Z0-9\s]+$/;
+            return validPattern.test(input);
+        }
+
+
+        function updateChildren(url, type, targetElement, buttonToEnable) {
+            var $thisTargetElement = $("#" + targetElement);
+            var $enabledButton = $("#" + buttonToEnable)
+            $enabledButton.prop("disabled", false);
+            $.get(url, function (data) {
+                $thisTargetElement.empty().append("<option value='' selected disabled>Select a " + type + "</option>");
+                data.forEach(function (child) {
+                    $thisTargetElement.append("<option value='" + child.id + "'>" + child.name + "</option>");
+                });
+                $("#info").text("Fetched " + type);
+            })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    $("#info").text("Error fetching " + "type\n" + textStatus + " - " + errorThrown);
+                });
+        }
+
+        function postMyData(url, type, contentType, postData, dataCategory, targetElement, infoElement, textToClearElement) {
+            var $thisTargetElement = $("#" + targetElement);
+            var $thisInfoElement = $("#" + infoElement);
+            var $thisTextToClearElement = $("#" + textToClearElement)
+
+            $.ajax({
+                url: url,
+                type: type,
+                contentType: contentType,
+                data: JSON.stringify(postData),
+
+                success: function (response) {
+                    console.log("Add new " + dataCategory + ": ", response);
+                    $thisTargetElement.append("<option value='" + response.id + "'>" + response.name + "</option>");
+                    $thisInfoElement.text("Added new " + dataCategory + ": " + response.name);
+                    $thisTextToClearElement.val("")
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error:", errorThrown);
+                    $thisInfoElement.text("Error:" + errorThrown);
+                }
+            });
+        }
+
+        function deleteMyData(url, dataCategory) {
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                contentType: "application/json",
+                data: JSON.stringify({}),
+
+                success: function (response) {
+                    console.log("Removed " + dataCategory + ": ", response);
+                    switch (dataCategory) {
+                        case "Category":
+                            location.reload();
+                            break;
+
+                        case "Subcategory":
+                            var selectedCategory = $("#category-dropdown").val();
+                            updateChildren("/quiz/subcategories/" + selectedCategory, "Subcategories", "subcategory-dropdown", "remove-category-button")
+                            $("#subject-dropdown").empty().append("<option value='' selected disabled>Select a Subject</option>");
+                            $("#unit-dropdown").empty().append("<option value='' selected disabled>Select a Unit</option>");
+
+                            break;
+
+                        case "Subject":
+                            var selectedSubcategory = $("#subcategory-dropdown").val();
+                            updateChildren("/quiz/subjects/" + selectedSubcategory, "Subjects", "subject-dropdown", "remove-subcategory-button")
+                            $("#unit-dropdown").empty().append("<option value='' selected disabled>Select a Unit</option>");
+                            break;
+
+                        case "Unit":
+                            var selectedSubject = $("#subject-dropdown").val();
+                            updateChildren("/quiz/units/" + selectedSubject, "Units", "unit-dropdown", "remove-subject-button")
+                            break;
+
+                        default:
+                            break;
+
+                    }
+
+                },
+
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#info").text("Error:" + errorThrown);
+                    console.error("Error:", errorThrown);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $("#category-dropdown").on("change", function () {
+                var selectedCategory = $(this).val();
+                if (selectedCategory !== "") {
+                    updateChildren("/quiz/subcategories/" + selectedCategory, "Subcategories", "subcategory-dropdown", "remove-category-button")
+                }
+            });
+            $("#subcategory-dropdown").on("change", function () {
+                var selectedSubcategory = $(this).val();
+                if (selectedSubcategory !== "") {
+                    updateChildren("/quiz/subjects/" + selectedSubcategory, "Subjects", "subject-dropdown", "remove-subcategory-button")
+                }
+            });
+            $("#subject-dropdown").on("change", function () {
+                var selectedSubject = $(this).val();
+                if (selectedSubject !== "") {
+                    updateChildren("/quiz/units/" + selectedSubject, "Units", "unit-dropdown", "remove-subject-button")
+                }
+            });
+            $("#unit-dropdown").on("change", function () {
+                var selectedUnit = $(this).val();
+                if (selectedUnit !== "") {
+                    $("#remove-unit-button").prop("disabled", false);
+                }
+            });
+
+            $("#new-unit-button").on("click", function () {
+
+                var subject_id = $("#subject-dropdown").val();
+                var new_unit = $("#new-unit").val();
+                if (!isValidString(new_unit)) {
+                    $("#info").text("Invalid Unit name. Only alphanumeric allowed")
+                    return
+                }
+
+                // Prepare data to be posted
+                var postData = {
+                    subject_id: subject_id,
+                    unit_name: new_unit
+                };
+                postMyData(
+                    "/admin/units",
+                    "POST",
+                    "application/json",
+                    postData,
+                    "Units",
+                    "unit-dropdown",
+                    "info",
+                    "new-unit"
+                )
+            });
+            $("#new-subject-button").on("click", function () {
+
+                var new_subject = $("#new-subject").val();
+                var subcategory_id = $("#subcategory-dropdown").val();
+                if (!isValidString(new_subject)) {
+                    $("#info").text("Invalid Subject name. Only alphanumeric allowed")
+                    return
+                }
+
+                var postData = {
+                    subject_name: new_subject,
+                    subcategory_id: subcategory_id
+                };
+
+                postMyData(
+                    "/admin/subjects",
+                    "POST",
+                    "application/json",
+                    postData,
+                    "Subjects",
+                    "subject-dropdown",
+                    "info",
+                    "new-subject"
+                )
+
+            });
+            $("#new-subcategory-button").on("click", function () {
+
+                var new_subcategory = $("#new-subcategory").val();
+                var category_id = $("#category-dropdown").val();
+                if (!isValidString(new_subcategory)) {
+                    $("#info").text("Invalid Subcategory name. Only alphanumeric allowed")
+                    return
+                }
+                // Prepare data to be posted
+                var postData = {
+                    category_id: category_id,
+                    subcategory_name: new_subcategory
+                };
+
+                postMyData(
+                    "/admin/subcategories",
+                    "POST",
+                    "application/json",
+                    postData,
+                    "Subcategories",
+                    "subcategory-dropdown",
+                    "info",
+                    "new-subcategory"
+                )
+            });
+            $("#new-category-button").on("click", function () {
+
+                var new_category = $("#new-category").val();
+                if (!isValidString(new_category)) {
+                    $("#info").text("Invalid Category name. Only alphanumeric allowed")
+                    return
+                }
+                // Prepare data to be posted
+                var postData = {
+                    category_name: new_category
+                };
+                postMyData(
+                    "/admin/categories",
+                    "POST",
+                    "application/json",
+                    postData,
+                    "Categories",
+                    "category-dropdown",
+                    "info",
+                    "new-category"
+                )
+            });
+
+            $("#remove-category-button").on("click", function () {
+                var category_to_delete = $("#category-dropdown").val();
+                deleteMyData("/admin/category/" + category_to_delete, "Category")
+            });
+
+            $("#remove-subcategory-button").on("click", function () {
+                var subcategory_to_delete = $("#subcategory-dropdown").val();
+                deleteMyData("/admin/subcategory/" + subcategory_to_delete, "Subcategory")
+            });
+
+            $("#remove-subject-button").on("click", function () {
+                var subject_to_delete = $("#subject-dropdown").val();
+                deleteMyData("/admin/subject/" + subject_to_delete, "Subject")
+            });
+
+            $("#remove-unit-button").on("click", function () {
+                var unit_to_delete = $("#unit-dropdown").val();
+                deleteMyData("/admin/unit/" + unit_to_delete, "Unit")
+            });
+
+            $("#upload-button").on("click", function () {
+                var unit_id = $("#unit-dropdown").val();
+                var subject_id = $("#subject-dropdown").val();
+                var subcategory_id = $("#subcategory-dropdown").val();
+                var category_id = $("#category-dropdown").val();
+                var new_unit = $("#new-unit").val();
+                var questionsCSV = $("#questions-csv").val();
+
+                // Prepare data to be posted
+                var postData = {
+                    unit_id: unit_id,
+                    subject_id: subject_id,
+                    subcategory_id: subcategory_id,
+                    category_id: category_id,
+                    new_unit: new_unit,
+                    questionsCSV: questionsCSV
+                };
+
+                // POST data to the desired URL
+                $.ajax({
+                    url: "/admin/questions",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(postData),
+
+                    success: function (response) {
+                        console.log("Upload response:", response);
+                        $("#unit-dropdown").empty()
+                        response.units.forEach(function (unit) {
+                            $("#unit-dropdown").append("<option value='" + unit.id + "'>" + unit.name + "</option>");
+                        });
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.error("Error:", errorThrown);
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>
