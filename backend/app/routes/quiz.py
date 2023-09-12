@@ -5,6 +5,10 @@ from ..models.question import Question
 
 quiz_bp = Blueprint('quiz', __name__)
 
+@quiz_bp.route('/', methods=['GET'])
+def index():
+    return jsonify({"message": "Hello World"})
+
 @quiz_bp.route('/categories', methods=['GET'])
 def get_categories():
     """
