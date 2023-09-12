@@ -1,7 +1,5 @@
-import json
 from flask import Blueprint, request, jsonify, g
 from ..models.social import User, Comment, Subcomment
-from ..models.question import Question
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from app import db

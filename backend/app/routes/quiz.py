@@ -1,12 +1,7 @@
 import random
-import pandas as pd
 from flask import Blueprint, jsonify, request
-from app import db, jwt
-from ..models.social import User
 from ..models.categories import Category, Subcategory, Subject, Unit
 from ..models.question import Question
-
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 quiz_bp = Blueprint('quiz', __name__)
 

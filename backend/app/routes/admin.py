@@ -1,5 +1,3 @@
-import random
-import pandas as pd
 from flask import Blueprint, render_template, jsonify, request
 from ..models.categories import Category, Subcategory, Subject, Unit
 from ..models.question import Question
@@ -145,7 +143,7 @@ def upload_questions():
         
         for qrow in questions:
             row = qrow.split("||")
-            if len(row) < 9:
+            if len(row) < 8:
                 error_counter += 1
                 continue
             print(row[0])
@@ -160,9 +158,9 @@ def upload_questions():
                 option_b=row[3],
                 option_c=row[4],
                 option_d=row[5],
-                option_e=row[6],
-                correct_options=list(row[7]),
-                explanation=row[8]
+                #option_e=row[6],
+                correct_options=list(row[6]),
+                explanation=row[7]
             )
             db.session.add(question)
             addition_counter += 1
@@ -221,9 +219,10 @@ def delete_question(question_id):
     else:
         return jsonify({"message": "Question ${question_id} not found"}), 404
     
-    @admin_bp.route('/upload-form', methods=['GET'])
+@admin_bp.route('/upload-form', methods=['GET'])
 def show_upload_form():
     categories = Category.query.all()
     categories_list = [{'id': category.id, 'name': category.name}
                      for category in categories]
     return render_template('upload-form.html', categories=categories_list)
+
