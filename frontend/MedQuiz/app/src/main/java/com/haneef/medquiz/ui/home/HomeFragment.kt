@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
         var categoriesList = listOf<Category>()
         Log.d("CATS", "HERE")
         myScope.launch {
-            val networkHandler = NetworkHandler(requireActivity(), null, false)
+            val networkHandler = NetworkHandler(requireActivity(), false)
             categoriesJson = networkHandler.fetchWebPageContent("${resources.getString(R.string.root_url)}/quiz/get_all_categories")
             Log.d("CATS2", categoriesJson)
             if (categoriesJson != ""){
