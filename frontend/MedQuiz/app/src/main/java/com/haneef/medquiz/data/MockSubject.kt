@@ -1,4 +1,4 @@
-package com.haneef.medmcq.data
+package com.haneef.medquiz
 
 class MockSubject(val name: String, var totalQuestions: Int, var score: Int){
 

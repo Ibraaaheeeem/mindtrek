@@ -1,4 +1,4 @@
-package com.haneef.medmcq.data
+package com.haneef.medquiz
 
 class Mock(val userName: String,  val score: Int){
     val subjects: MutableList<MockSubject>? = null
