@@ -34,6 +34,8 @@ class MyAdapter internal constructor(
     private val mMultiLevelRecyclerView: MultiLevelRecyclerView
     private var mock = Mock("user", 0)
     private val MOCK_STYLE_TEST = 9
+    private val FREE_STYLE_TEST = 10
+
 
     init {
         this.mListItems = mListItems
@@ -76,6 +78,7 @@ class MyAdapter internal constructor(
             ).show()
             Log.d("MOCK", "NO LONGER NULL")
             mock.addSubject(it.tag as String)
+            Log.d("MOCK", it.tag.toString()+"-"+mock.subjects?.size.toString())
             updateMockSubjects(mock)
             Log.d("MOCK", "mock")
 
@@ -109,16 +112,26 @@ class MyAdapter internal constructor(
     fun updateMockSubjects(mock: Mock){
         Log.d("MOCK", "HERE")
         Log.d("MOCK", mock.subjects?.size.toString())
-        mock.subjects?.forEach {
+        mockSubjectsLayout.removeAllViews()
+        mock.subjects?.forEachIndexed {index, it ->
             val view = LayoutInflater.from(mContext).inflate(R.layout.item_mock_subject, null, false)
             view.tag = it
-            val mockSubjectName = view.findViewById<TextView>(R.id.subjectTextView)
-            val mockSubjectIndex = view.findViewById<TextView>(R.id.indexTextView)
+            view.findViewById<TextView>(R.id.subjectTextView).text = (index + 1).toString()
+
+            view.findViewById<TextView>(R.id.indexTextView).text = it.name
             val mockSubjectQuestionCount = view.findViewById<TextView>(R.id.editTextNumber)
-            mockSubjectQuestionCount.setOnClickListener{
-                val mockSubject = it.tag as MockSubject
-                val countEditText = it as EditText
-                mockSubject.setQuestionCount(countEditText.text.toString().toInt())
+            val removeMockImageView = view.findViewById<ImageView>(R.id.removeMockImageView)
+            removeMockImageView.setOnClickListener{
+                val mockSubject = (it.parent as View).tag as MockSubject
+                mock.removeSubject(mockSubject)
+                updateMockSubjects(mock)
+            }
+            mockSubjectQuestionCount.setOnFocusChangeListener { view, hasFocus ->
+                if (!hasFocus) {
+                    val mockSubject = (view.parent as View).tag as MockSubject
+                    val countEditText = view as EditText
+                    mockSubject.setQuestionCount(countEditText.text.toString().toInt())
+                }
             }
             mockSubjectsLayout.addView(view)
 
