@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.haneef.medquiz.Category
@@ -21,6 +24,7 @@ import com.haneef.medquiz.databinding.FragmentHomeBinding
 import com.haneef.medquiz.multilevelview.MultiLevelRecyclerView
 import com.haneef.medquiz.multilevelview.models.RecyclerViewItem
 import com.haneef.medquiz.network.NetworkHandler
+import com.haneef.medquiz.ui.login.LoginFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,10 +33,12 @@ import java.util.Locale
 
 class HomeFragment : Fragment() {
 
+    private lateinit var myAdapter: MyAdapter
     private lateinit var multiLevelRecyclerView: MultiLevelRecyclerView
     private var _binding: FragmentHomeBinding? = null
     private val MOCK_STYLE_TEST = 9
     private val FREE_STYLE_TEST = 10
+    private var testStyle = FREE_STYLE_TEST
 
 
     // This property is only valid between onCreateView and
@@ -44,12 +50,13 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         multiLevelRecyclerView = binding.multilevelRecycler
         multiLevelRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val mockStyleButton = binding.buttonMockStyle
+        val freeStyleButton = binding.buttonFreeStyle
+        val startMockButton = binding.startMockButton
         val root: View = binding.root
 
         /*val textView: TextView = binding.textHome
@@ -58,6 +65,28 @@ class HomeFragment : Fragment() {
         }*/
 
         readCategoriesFromBackend()
+
+        mockStyleButton.setOnClickListener{
+            if (true){
+                findNavController().navigate(R.id.home_to_login)
+            }
+            testStyle = MOCK_STYLE_TEST
+            binding.mockLayout.visibility = View.VISIBLE
+            myAdapter.setTestStyle(MOCK_STYLE_TEST)
+            myAdapter.notifyDataSetChanged()
+
+        }
+
+        freeStyleButton.setOnClickListener{
+            testStyle = FREE_STYLE_TEST
+            binding.mockLayout.visibility = View.GONE
+            myAdapter.setTestStyle(FREE_STYLE_TEST)
+            myAdapter.notifyDataSetChanged()
+        }
+
+        startMockButton.setOnClickListener{
+
+        }
 
         return root
     }
@@ -85,7 +114,7 @@ class HomeFragment : Fragment() {
                 withContext(Dispatchers.Main){
                     Log.d("CATS3", categoriesList.size.toString())
                     val itemList = recursivePopulateCategories(categoriesList, 0, categoriesList.size) as List<Item>
-                    val myAdapter = MyAdapter(requireActivity(),0, itemList, binding.mockSubjectsLayout, binding.multilevelRecycler)
+                    myAdapter = MyAdapter(requireActivity(),0, itemList, binding.mockSubjectsLayout, binding.multilevelRecycler)
                     multiLevelRecyclerView.adapter = myAdapter
                     multiLevelRecyclerView.setToggleItemOnClick(false)
                     multiLevelRecyclerView.setAccordion(false)
@@ -181,8 +210,6 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
-
-
             displayList.add(objectToItem)
         }
         return displayList
