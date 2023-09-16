@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -25,6 +26,7 @@ import com.haneef.medquiz.multilevelview.MultiLevelRecyclerView
 import com.haneef.medquiz.multilevelview.models.RecyclerViewItem
 import com.haneef.medquiz.network.NetworkHandler
 import com.haneef.medquiz.ui.login.LoginFragment
+import com.haneef.medquiz.utils.JwtManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +35,9 @@ import java.util.Locale
 
 class HomeFragment : Fragment() {
 
+    private lateinit var freeStyleButton: Button
+    private lateinit var mockStyleButton: Button
+    private lateinit var startMockButton: Button
     private lateinit var myAdapter: MyAdapter
     private lateinit var multiLevelRecyclerView: MultiLevelRecyclerView
     private var _binding: FragmentHomeBinding? = null
@@ -54,9 +59,9 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         multiLevelRecyclerView = binding.multilevelRecycler
         multiLevelRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val mockStyleButton = binding.buttonMockStyle
-        val freeStyleButton = binding.buttonFreeStyle
-        val startMockButton = binding.startMockButton
+        mockStyleButton = binding.buttonMockStyle
+        freeStyleButton = binding.buttonFreeStyle
+        startMockButton = binding.startMockButton
         val root: View = binding.root
 
         /*val textView: TextView = binding.textHome
@@ -66,27 +71,7 @@ class HomeFragment : Fragment() {
 
         readCategoriesFromBackend()
 
-        mockStyleButton.setOnClickListener{
-            if (true){
-                findNavController().navigate(R.id.home_to_login)
-            }
-            testStyle = MOCK_STYLE_TEST
-            binding.mockLayout.visibility = View.VISIBLE
-            myAdapter.setTestStyle(MOCK_STYLE_TEST)
-            myAdapter.notifyDataSetChanged()
 
-        }
-
-        freeStyleButton.setOnClickListener{
-            testStyle = FREE_STYLE_TEST
-            binding.mockLayout.visibility = View.GONE
-            myAdapter.setTestStyle(FREE_STYLE_TEST)
-            myAdapter.notifyDataSetChanged()
-        }
-
-        startMockButton.setOnClickListener{
-
-        }
 
         return root
     }
@@ -109,7 +94,7 @@ class HomeFragment : Fragment() {
             val networkHandler = NetworkHandler(requireActivity(), false)
             categoriesJson = networkHandler.fetchWebPageContent("${resources.getString(R.string.root_url)}/quiz/get_all_categories")
             Log.d("CATS2", categoriesJson)
-            if (categoriesJson != ""){
+            if (categoriesJson != "" && categoriesJson != "ERROR"){
                 categoriesList = Gson().fromJson(categoriesJson, Array<Category>::class.java).toList()
                 withContext(Dispatchers.Main){
                     Log.d("CATS3", categoriesList.size.toString())
@@ -120,6 +105,27 @@ class HomeFragment : Fragment() {
                     multiLevelRecyclerView.setAccordion(false)
                     multiLevelRecyclerView.openTill(0, 1, 2, 3)
                 }
+            }
+            mockStyleButton.setOnClickListener{
+                if (JwtManager.getInstance(requireContext()).getJwt() == null){
+                    findNavController().navigate(R.id.home_to_login)
+                    return@setOnClickListener
+                }
+                testStyle = MOCK_STYLE_TEST
+                binding.mockLayout.visibility = View.VISIBLE
+                myAdapter.setTestStyle(MOCK_STYLE_TEST)
+                myAdapter.notifyDataSetChanged()
+            }
+
+            freeStyleButton.setOnClickListener{
+                testStyle = FREE_STYLE_TEST
+                binding.mockLayout.visibility = View.GONE
+                myAdapter.setTestStyle(FREE_STYLE_TEST)
+                myAdapter.notifyDataSetChanged()
+            }
+
+            startMockButton.setOnClickListener{
+
             }
         }
 
