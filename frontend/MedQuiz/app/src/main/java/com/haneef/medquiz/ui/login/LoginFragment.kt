@@ -1,6 +1,8 @@
 package com.haneef.medquiz.ui.login
 
+import LoginService
 import RegistrationService
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,9 +11,18 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.haneef.medquiz.R
+import com.haneef.medquiz.data.BackendResponse
+import com.haneef.medquiz.data.UserData
 import com.haneef.medquiz.databinding.FragmentHomeBinding
 import com.haneef.medquiz.databinding.FragmentLoginBinding
+import com.haneef.medquiz.utils.AlertUtils
+import com.haneef.medquiz.utils.JwtManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -24,6 +35,7 @@ class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val REGISTRATION_ENDPOINT = "/auth/register"
+    private val LOGIN_ENDPOINT = "/auth/login"
     private val client = OkHttpClient()
 
     // This property is only valid between onCreateView and
@@ -62,6 +74,16 @@ class LoginFragment : Fragment() {
         binding.loginButton.setOnClickListener {
             // Handle login logic
             // Example: Call a login function or validate login credentials
+            val username = binding.loginEmailEditText.text.toString().trim()
+            val password = binding.loginPasswordEditText.text.toString().trim()
+            if (
+                username != "" &&
+                password.length >= 4 &&
+                password.length < 20
+            ) {
+                val userData = UserData(username, password, "")
+                login(userData)
+            }
         }
 
         binding.registerButton.setOnClickListener {
@@ -69,6 +91,7 @@ class LoginFragment : Fragment() {
             val email = binding.registerEmailEditText.text.toString().trim()
             val password = binding.registerPasswordEditText.text.toString().trim()
             val password2 = binding.registerPasswordEditText2.text.toString().trim()
+            Log.d("USERREG", "B4B4")
             if (
                 email != "" &&
                 username != "" &&
@@ -76,7 +99,8 @@ class LoginFragment : Fragment() {
                 password.length < 20 &&
                 password == password2
             ) {
-                register(email, username, password)
+                val userData = UserData(username, password, email)
+                register(userData)
             }
         }
 
@@ -87,15 +111,31 @@ class LoginFragment : Fragment() {
         return root
     }
 
-    private fun register(email: String, username: String, password: String) {
-        val registrationService = RegistrationService()
-
+    private fun login(userData: UserData) {
+        val url = "${resources.getString(R.string.root_url)}${LOGIN_ENDPOINT}"
+        val loginService = LoginService(url)
         val callback = object : Callback {
             override fun onResponse(call: Call, response: Response) {
                 // Handle the response here
                 val responseBody = response.body?.string()
                 Log.d("USERREG", responseBody.toString())
-                // Parse and process the response as needed
+                val gson = Gson()
+
+                val response = gson.fromJson(responseBody.toString(), BackendResponse::class.java)
+
+                val token = response.access_token
+                if (token != ""){
+                    val alertUtils = AlertUtils(requireContext()) // 'this' is the context of your activity or fragment
+                    // Display an alert
+                    val myScope = CoroutineScope(Dispatchers.Main)
+                    myScope.launch {
+                        JwtManager.getInstance(requireContext()).saveJwt(token)
+                        alertUtils.showAlert("Log in Successfful", "You have successfully logged in", "OK"){
+                            findNavController().navigate(R.id.login_to_home)
+                        }
+                    }
+                }
+                Log.d("USERREG", token)
             }
 
             override fun onFailure(call: Call, e: IOException) {
@@ -104,7 +144,45 @@ class LoginFragment : Fragment() {
             }
         }
 
-        registrationService.registerUser(username, password, email, callback)
+        loginService.loginUser(userData, callback)
+    }
+
+    private fun register(userData: UserData) {
+        val url = "${resources.getString(R.string.root_url)}${REGISTRATION_ENDPOINT}"
+        val registrationService = RegistrationService(url)
+        Log.d("USERREG", "BEFORE: "+ url)
+        val callback = object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                // Handle the response here
+                val responseBody = response.body?.string()
+                val gson = Gson()
+                val response = gson.fromJson(responseBody, BackendResponse::class.java)
+
+                val message = response.message
+                if (message.equals("Registration successful")){
+                    val alertUtils = AlertUtils(requireContext()) // 'this' is the context of your activity or fragment
+                    // Display an alert
+                    val myScope = CoroutineScope(Dispatchers.Main)
+                    myScope.launch {
+                        alertUtils.showAlert(
+                            "Registration Successfful",
+                            "We have received your registration. Now, you can log in.",
+                            "OK"
+                        ){
+                            binding.loginButton.performClick()
+                        }
+                    }
+                }
+                println("Message: $message")
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("USERREG", e.message.toString())
+                // Handle any network or request errors here
+            }
+        }
+
+        registrationService.registerUser(userData, callback)
     }
 
     override fun onDestroyView() {
