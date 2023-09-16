@@ -20,7 +20,11 @@
         android:id="@+id/nav_login"
         android:name="com.haneef.medquiz.ui.login.LoginFragment"
         android:label="@string/login_or_register"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/login_to_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/quiz_page"
