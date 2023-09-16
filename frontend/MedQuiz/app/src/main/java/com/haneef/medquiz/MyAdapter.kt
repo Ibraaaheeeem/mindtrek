@@ -120,6 +120,7 @@ class MyAdapter internal constructor(
 
             view.findViewById<TextView>(R.id.indexTextView).text = it.name
             val mockSubjectQuestionCount = view.findViewById<TextView>(R.id.editTextNumber)
+            mockSubjectQuestionCount.text = it.totalQuestions.toString()
             val removeMockImageView = view.findViewById<ImageView>(R.id.removeMockImageView)
             removeMockImageView.setOnClickListener{
                 val mockSubject = (it.parent as View).tag as MockSubject
