@@ -18,12 +18,10 @@ def create_app():
     database_url = os.environ.get('ALX_DB_URL')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    print(database_url)
 
     # Configure secret key for jwt
     secret_key = os.environ.get('JWT_KEY')
     app.config['JWT_SECRET_KEY'] = secret_key
-    print(secret_key)
 
     # Initialize db and migrate with the app
     db.init_app(app)
