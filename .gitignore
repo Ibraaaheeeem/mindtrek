@@ -1,0 +1,38 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore system and IDE files
+*.DS_Store
+.vscode/
+
+# Ignore environment files
+venv/
+*.env
+
+# Ignore log files
+*.log
+
+# Ignore database files
+*.db
+*.sqlite
+
+# Ignore cache folders
+.cache/
+*.swp
+
+# Ignore local development configuration
+instance/
+nodemodules/
+migrations/
+config.py
+
+# Ignore generated files and build artifacts
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+dist/
+build/
+node_modules

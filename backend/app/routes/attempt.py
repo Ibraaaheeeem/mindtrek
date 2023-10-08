@@ -1,9 +1,12 @@
-import json
+import random
 from flask import Blueprint, request, jsonify
 from ..models.social import Attempt, User, MockSubject
+from ..models.question import Question
+from ..models.categories import Category, Subcategory, Subject, Unit
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from app import db
+
 
 # Create a Blueprint for the mock exam endpoints
 attempt_bp = Blueprint('attempt', __name__)
@@ -26,7 +29,7 @@ def create_attempt():
     user_verified = get_jwt_identity()
     if user_verified is None:
         return jsonify({'message': 'Invalid user'}), 400
-    current_user = User.query.filter_by(username=user_verified).first()
+    current_user = User.query.filter_by(email=user_verified).first()
 
     # Receive passed parameters
     data = request.get_json()
@@ -34,12 +37,16 @@ def create_attempt():
     mock_subjects = data.get('mock_subjects')  # List of mock subjects
     total_duration = data.get('total_duration') # Duration of mock exam
     date_taken = data.get('date_taken') # Mock exam schedule
-    date_object = datetime.strptime(date_taken, '%d-%m-%Y %H:%M:%S')
+    date_object = None
+    if date_taken:
+        date_object = datetime.strptime(date_taken, '%d-%m-%Y %H:%M:%S')
     current_timestamp = datetime.now() # date object for immediate mock exam
     total_possible_score = 0 # Initial value
 
-    if not current_user or not mock_subjects or not total_duration or not date_taken:
-        return jsonify({'message': 'Incomplete data. All data are required.'}), 400
+    if not current_user or not mock_subjects or not total_duration:
+        print(current_user)
+        print(mock_subjects)
+        return jsonify({'msg': 'Incomplete data. All data are required.'}), 400
     
     # Create a new mock exam
     attempt = Attempt(
@@ -48,11 +55,46 @@ def create_attempt():
         date_taken = date_object if date_taken else current_timestamp
     )
 
+    
+    quiz_data = []
     # Add subjetcs to mock exam
     for subject in mock_subjects:
+        
+        if subject['level'] == 1:
+            level = Category.query.filter_by(name=subject['name']).first()
+            print(level.name)
+            questions = Question.query.filter_by(category_id=level.id).all()
+            quiz_questions = random.sample(questions, min(subject['num_questions'], len(questions)))
+            quiz_data_ids = {"subject": subject['name'], "subjectId": level.id, "level": subject['level'], "ids": [question.id for question in quiz_questions]}
+            quiz_data.append(quiz_data_ids)
+
+        elif subject['level'] == 2:
+            level = Subcategory.query.filter_by(name=subject['name']).first()
+            questions = Question.query.filter_by(subcategory_id=level.id).all()
+            quiz_questions = random.sample(questions, min(subject['num_questions'], len(questions)))
+            print(len(quiz_questions))
+            quiz_data_ids = {"subject": subject['name'], "subjectId": level.id, "level": subject['level'], "ids": [question.id for question in quiz_questions]}
+            quiz_data.append(quiz_data_ids)
+
+        elif subject['level'] == 3:
+            level = Subject.query.filter_by(name=subject['name']).first()
+            questions = Question.query.filter_by(subject_id=level.id).all()
+            quiz_questions = random.sample(questions, min(subject['num_questions'], len(questions)))
+            print(len(quiz_questions))
+            quiz_data_ids = {"subject": subject['name'], "subjectId": level.id, "level": subject['level'], "ids": [question.id for question in quiz_questions]}
+            quiz_data.append(quiz_data_ids)
+
+        elif subject['level'] == 4:
+            level = Unit.query.filter_by(name=subject['name']).first()
+            questions = Question.query.filter_by(unit_id=level.id).all()
+            quiz_questions = random.sample(questions, min(subject['num_questions'], len(questions)))
+            print(len(quiz_questions))
+            quiz_data_ids = {"subject": subject['name'], "subjectId": subject['id'], "level": subject['level'],"ids": [question.id for question in quiz_questions]}
+            quiz_data.append(quiz_data_ids)
+
         mock_subject = MockSubject(
             name = subject['name'],
-            num_questions = subject['num_questions'],
+            num_questions = min(len(questions), subject['num_questions']),
             score = 0
         )
         total_possible_score += mock_subject.num_questions
@@ -65,7 +107,7 @@ def create_attempt():
     db.session.commit()
 
 
-    return jsonify({'message': 'Mock exam created successfully.'}), 201
+    return jsonify({'msg': 'Mock created', 'quiz_data': quiz_data, "mock_id": attempt.id, "duration": total_duration}), 201
 
 @attempt_bp.route('/mock/<int:attempt_id>', methods=['PATCH'])
 def edit_attempt(attempt_id):

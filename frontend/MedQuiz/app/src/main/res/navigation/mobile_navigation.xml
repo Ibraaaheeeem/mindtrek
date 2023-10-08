@@ -6,6 +6,12 @@
     app:startDestination="@+id/nav_home">
 
     <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.haneef.medquiz.ui.profile.ProfileFragment"
+        android:label="@string/menu_profile"
+        tools:layout="@layout/fragment_profile" >
+    </fragment>
+    <fragment
         android:id="@+id/nav_home"
         android:name="com.haneef.medquiz.ui.home.HomeFragment"
         android:label="@string/menu_home"
@@ -14,6 +20,9 @@
         <action
             android:id="@+id/home_to_login"
             app:destination="@id/nav_login" />
+        <action
+            android:id="@+id/home_to_quiz"
+            app:destination="@id/nav_quiz" />
     </fragment>
 
     <fragment
@@ -27,8 +36,39 @@
     </fragment>
 
     <fragment
-        android:id="@+id/quiz_page"
+        android:id="@+id/nav_quiz"
         android:name="com.haneef.medquiz.ui.quiz.QuizFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:label="@string/quiz"
+        tools:layout="@layout/fragment_quiz" >
+
+        <action
+            android:id="@+id/quiz_to_score"
+            app:destination="@id/nav_score" />
+
+        <action
+            android:id="@+id/quiz_to_home"
+            app:destination="@id/nav_home" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/nav_score"
+        android:name="com.haneef.medquiz.ui.quiz.ScoresFragment"
+        android:label="@string/score"
+        tools:layout="@layout/fragment_score" >
+        <action
+            android:id="@+id/score_to_quiz"
+            app:destination="@id/nav_quiz" />
+        <action
+            android:id="@+id/score_to_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/view_corrections"
+            app:destination="@id/nav_corrections" />
+
+    </fragment>
+    <fragment  android:id="@+id/nav_corrections"
+        android:name="com.haneef.medquiz.ui.quiz.CorrectionsFragment"
+        android:label="@string/corrections">
+
+    </fragment>
 </navigation>

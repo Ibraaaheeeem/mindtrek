@@ -9,10 +9,17 @@ class Category(db.Model):
     subcategories = db.relationship('Subcategory', backref='category', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
+        from ..models import Question
+        questions = Question.query.filter_by(category_id=self.id).all()
+        count = 0
+        for question in questions:
+            count += 1
+        
         return {
             'id': self.id,
             'name': self.name,
-            'subcategories': [subcategory.serialize() for subcategory in self.subcategories]
+            'subcategories': [subcategory.serialize() for subcategory in self.subcategories],
+            'nquestions': len(questions)
         }
 
     def __repr__(self):
@@ -28,10 +35,17 @@ class Subcategory(db.Model):
     subjects = db.relationship('Subject', backref='subcategory', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
+        from ..models import Question
+        questions = Question.query.filter_by(subcategory_id=self.id).all()
+        count = 0
+        for question in questions:
+            count += 1
+        
         return {
             'id': self.id,
             'name': self.name,
-            'subjects': [subject.serialize() for subject in self.subjects]
+            'subjects': [subject.serialize() for subject in self.subjects],
+            'nquestions': len(questions)
         }
 
     def __repr__(self):
@@ -46,10 +60,16 @@ class Subject(db.Model):
     units = db.relationship('Unit', backref='subject', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
+        from ..models import Question
+        questions = Question.query.filter_by(subject_id=self.id).all()
+        count = 0
+        for question in questions:
+            count += 1
         return {
             'id': self.id,
             'name': self.name,
-            'units': [unit.serialize() for unit in self.units]
+            'units': [unit.serialize() for unit in self.units],
+            'nquestions': len(questions)
         }
 
     def __repr__(self):
@@ -65,10 +85,18 @@ class Unit(db.Model):
     tags = db.Column(ARRAY(db.String))
     
     def serialize(self):
+        from ..models import Question
+        questions = Question.query.filter_by(unit_id=self.id).all()
+        count = 0
+        for question in questions:
+            count += 1
+        
+        
         return {
             'id': self.id,
             'name': self.name,
-            'tags': self.tags
+            'tags': self.tags,
+            'nquestions': len(questions)
         }
     
     def __repr__(self):

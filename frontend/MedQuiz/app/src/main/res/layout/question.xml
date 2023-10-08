@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Question Number -->
+    <TextView
+        android:id="@+id/question_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Question 1:"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <!-- Question -->
+    <TextView
+        android:id="@+id/question_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="This is the question text?"
+        android:textSize="18sp"/>
+
+    <!-- Option A -->
+    <RadioButton
+        android:id="@+id/option_a"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="A) Option A"
+        android:textSize="16sp"/>
+
+    <!-- Option B -->
+    <RadioButton
+        android:id="@+id/option_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="B) Option B"
+        android:textSize="16sp"/>
+
+    <!-- Option C -->
+    <RadioButton
+        android:id="@+id/option_c"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="C) Option C"
+        android:textSize="16sp"/>
+
+    <!-- Option D -->
+    <RadioButton
+        android:id="@+id/option_d"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="D) Option D"
+        android:textSize="16sp"/>
+
+    <!-- Option E (if available) -->
+    <RadioButton
+        android:id="@+id/option_e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="E) Option E"
+        android:textSize="16sp"/>
+
+</LinearLayout>

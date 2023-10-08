@@ -4,8 +4,8 @@ import android.util.Log
 
 class Mock(val userName: String,  val score: Int){
     val subjects = mutableListOf<MockSubject>()
-    fun addSubject(subjectName: String) {
-        val newSubject = MockSubject(subjectName, 0, 0)
+    fun addSubject(subjectName: String, level: Int) {
+        val newSubject = MockSubject(subjectName, 0, level, 0)
         subjects?.add(newSubject)
         Log.d("MOCK2", subjects?.size.toString())
     }

@@ -2,6 +2,7 @@ package com.haneef.medquiz
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +13,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.haneef.medquiz.multilevelview.MultiLevelAdapter
 import com.haneef.medquiz.multilevelview.MultiLevelRecyclerView
+import com.haneef.medquiz.utils.PrefsManager
 import java.util.Locale
-
 
 class MyAdapter internal constructor(
 
@@ -24,7 +26,8 @@ class MyAdapter internal constructor(
     var mTestStyle: Int,
     mListItems: List<Item>,
     val mockSubjectsLayout: LinearLayout,
-    mMultiLevelRecyclerView: MultiLevelRecyclerView
+    mMultiLevelRecyclerView: MultiLevelRecyclerView,
+    private val navigationListener: FragmentNavigationListener
 ) :
     MultiLevelAdapter(mListItems) {
     private var mViewHolder: Holder? = null
@@ -36,6 +39,9 @@ class MyAdapter internal constructor(
     private val MOCK_STYLE_TEST = 9
     private val FREE_STYLE_TEST = 10
 
+    fun getMock(): Mock{
+        return mock
+    }
 
     init {
         this.mListItems = mListItems
@@ -45,7 +51,10 @@ class MyAdapter internal constructor(
 
     private fun setExpandButton(expandButton: ImageView, isExpanded: Boolean) {
         // set the icon based on the current state
-        expandButton.setImageResource(if (isExpanded) R.drawable.baseline_keyboard_double_arrow_up_24 else R.drawable.baseline_keyboard_double_arrow_down_24)
+
+        Log.d("EXPANDED", ""+isExpanded)
+        //expandButton.setImageResource(if (isExpanded) R.drawable.baseline_keyboard_double_arrow_up_24 else R.drawable.baseline_keyboard_double_arrow_down_24)
+        expandButton.setImageResource(R.drawable.baseline_keyboard_double_arrow_down_24)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -58,15 +67,66 @@ class MyAdapter internal constructor(
         mViewHolder = holder as Holder
         mItem = mListItems[position]
         val plusButton = holder.itemView.findViewById<ImageView>(R.id.addToMock)
-        when (getItemViewType(position)) {
-            0 -> holder.itemView.setBackgroundColor(Color.parseColor("#efefef"))
-            1 -> holder.itemView.setBackgroundColor(Color.parseColor("#dedede"))
-            2 -> holder.itemView.setBackgroundColor(Color.parseColor("#cdcdcd"))
-            else -> holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"))
+        val playButton = holder.itemView.findViewById<ImageView>(R.id.startFreeStyle)
+        val categoryLevel = getItemViewType(position)
+        val layoutParams = LinearLayout.LayoutParams(holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams)
+        when (categoryLevel) {
+
+            0 -> {
+                holder.itemView.setBackgroundColor(Color.parseColor("#efefff"))
+                layoutParams.setMargins(0, 0, 0, 0)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).setTextColor(Color.BLUE)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams = layoutParams
+            }
+            1 -> {
+                holder.itemView.setBackgroundColor(Color.parseColor("#dedeee"))
+                //layoutParams.setMargins(50, 0, 0, 0)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).text = ">>"
+                holder.itemView.findViewById<TextView>(R.id.levelsign).setTextColor(Color.RED)
+                holder.itemView.findViewById<TextView>(R.id.title).setTextColor(Color.RED)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams = layoutParams
+            }
+            2 -> {
+                holder.itemView.setBackgroundColor(Color.parseColor("#cdcddd"))
+                //layoutParams.setMargins(100, 0, 0, 0)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).text = ">>>"
+                holder.itemView.findViewById<TextView>(R.id.levelsign).setTextColor(Color.parseColor("#558855"))
+                holder.itemView.findViewById<TextView>(R.id.title).setTextColor(Color.parseColor("#558855"))
+                holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams = layoutParams
+            }
+            3 -> {
+                holder.itemView.setBackgroundColor(Color.parseColor("#ffffcc"))
+                holder.itemView.findViewById<TextView>(R.id.levelsign).text = ">>>>"
+                holder.itemView.findViewById<TextView>(R.id.levelsign).setTextColor(Color.MAGENTA)
+                holder.itemView.findViewById<TextView>(R.id.title).setTextColor(Color.MAGENTA)
+                //layoutParams.setMargins(150, 0, 0, 0)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams = layoutParams
+            }
+            else -> {
+                holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"))
+                //layoutParams.setMargins(200, 0, 0, 0)
+                holder.itemView.findViewById<TextView>(R.id.levelsign).layoutParams = layoutParams
+            }
         }
         when (mTestStyle){
-            MOCK_STYLE_TEST -> plusButton.visibility = View.VISIBLE
-            else -> plusButton.visibility = View.GONE
+            MOCK_STYLE_TEST -> {
+                plusButton.visibility = View.VISIBLE
+                playButton.visibility = View.GONE
+            }
+            else -> {
+                plusButton.visibility = View.GONE
+                playButton.visibility = View.VISIBLE
+            }
+        }
+        playButton.tag = mItem!!
+        playButton.setOnClickListener{
+            val sbj = it.tag as Item
+            val bundle = Bundle()
+            bundle.putInt("subject_id", sbj.id)
+            bundle.putString("subject_name", sbj.text)
+            bundle.putInt("subject_level", categoryLevel+1)
+            PrefsManager.getInstance(mContext).saveQuizMode("FREE_MODE")
+            navigationListener.navigateToFragment(R.id.home_to_quiz, bundle)
         }
 
         plusButton.setOnClickListener{
@@ -77,11 +137,10 @@ class MyAdapter internal constructor(
                 ), Toast.LENGTH_SHORT
             ).show()
             Log.d("MOCK", "NO LONGER NULL")
-            mock.addSubject(it.tag as String)
+            mock.addSubject(it.tag as String, categoryLevel+1)
             Log.d("MOCK", it.tag.toString()+"-"+mock.subjects?.size.toString())
             updateMockSubjects(mock)
             Log.d("MOCK", "mock")
-
         }
         plusButton.tag = mItem!!.text
         mViewHolder!!.mTitle.text = mItem!!.text
@@ -96,7 +155,6 @@ class MyAdapter internal constructor(
             "MuditLog",
             mItem!!.level.toString() + " " + mItem!!.position + " " + mItem!!.isExpanded + ""
         )
-
         // indent child items
         // Note: the parent item should start at zero to have no indentation
         // e.g. in populateFakeData(); the very first Item shold be instantiate like this: Item item = new Item(0);
@@ -116,26 +174,32 @@ class MyAdapter internal constructor(
         mock.subjects?.forEachIndexed {index, it ->
             val view = LayoutInflater.from(mContext).inflate(R.layout.item_mock_subject, null, false)
             view.tag = it
-            view.findViewById<TextView>(R.id.subjectTextView).text = (index + 1).toString()
+            view.findViewById<TextView>(R.id.subjectTextView).text = (index + 1).toString() +". "+ it.name + " (${it.num_questions})"
 
-            view.findViewById<TextView>(R.id.indexTextView).text = it.name
+            view.findViewById<TextView>(R.id.indexTextView).text = (index + 1).toString()
             val mockSubjectQuestionCount = view.findViewById<TextView>(R.id.editTextNumber)
-            mockSubjectQuestionCount.text = it.totalQuestions.toString()
+            mockSubjectQuestionCount.text = it.num_questions.toString()
             val removeMockImageView = view.findViewById<ImageView>(R.id.removeMockImageView)
+            val updateQuestionNumber = view.findViewById<ImageView>(R.id.updateQuestionNumber)
+            updateQuestionNumber.setOnClickListener{
+                val mockSubject = (it.parent as View).tag as MockSubject
+                val countEditText = (it.parent as View).findViewById<EditText>(R.id.editTextNumber)
+                if (countEditText.text.toString() == "") return@setOnClickListener
+                mockSubject.setQuestionCount(countEditText.text.toString().toInt())
+                updateMockSubjects(mock)
+            }
             removeMockImageView.setOnClickListener{
                 val mockSubject = (it.parent as View).tag as MockSubject
                 mock.removeSubject(mockSubject)
                 updateMockSubjects(mock)
             }
-            mockSubjectQuestionCount.setOnFocusChangeListener { view, hasFocus ->
-                if (!hasFocus) {
-                    val mockSubject = (view.parent as View).tag as MockSubject
-                    val countEditText = view as EditText
-                    mockSubject.setQuestionCount(countEditText.text.toString().toInt())
-                }
-            }
+            /*mockSubjectQuestionCount.setOnFocusChangeListener { view, hasFocus ->
+                val mockSubject = (view.parent as View).tag as MockSubject
+                val countEditText = view as EditText
+                if (countEditText.text.toString() == "") return@setOnFocusChangeListener
+                mockSubject.setQuestionCount(countEditText.text.toString().toInt())
+            }*/
             mockSubjectsLayout.addView(view)
-
         }
 
     }
@@ -164,20 +228,24 @@ class MyAdapter internal constructor(
             }
 
             //set click listener on LinearLayout because the click area is bigger than the ImageView
-            mExpandButton.setOnClickListener { // set click event on expand button here
+            itemView.findViewById<LinearLayout>(R.id.text_box).setOnClickListener { // set click event on expand button here
                 mMultiLevelRecyclerView.toggleItemsGroup(adapterPosition)
                 // rotate the icon based on the current state
                 // but only here because otherwise we'd see the animation on expanded items too while scrolling
                 mExpandIcon.animate()
                     .rotation((if (mListItems[adapterPosition].isExpanded) -180 else 0).toFloat())
                     .start()
-                Toast.makeText(
+                /*Toast.makeText(
                     mContext, String.format(
                         Locale.ENGLISH, "Item at position %d is expanded: %s",
                         adapterPosition, mItem!!.isExpanded
                     ), Toast.LENGTH_SHORT
-                ).show()
+                ).show()*/
             }
         }
     }
+    interface FragmentNavigationListener {
+        fun navigateToFragment(fragmentId: Int, bundle: Bundle)
+    }
+
 }

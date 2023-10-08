@@ -103,6 +103,61 @@ def get_questions(category_id, subcategory_id, subject_id, unit_id):
         question_data_list.append(question_data)
     return jsonify(question_data_list)
 
+@quiz_bp.route('/questions/level/<int:category_level>/category/<int:level_id>', methods=['GET'])
+def get_quiz_questions(category_level, level_id):
+
+    """
+    Returns a speciifed number of questions that
+    satisifes the paremeters. The category level
+    can be 1 -> Category, 2 -> Subcategory, 3 ->
+    Subject, 4 -> Unit. The the actual id of the
+    category will be used to retrieve the questions
+    """
+    
+    n = int(request.args.get('n', 1))
+    questions = None
+    if category_level == 1:
+        questions = Question.query.filter_by(category_id=level_id).all()
+    
+    elif category_level == 2:
+        questions = Question.query.filter_by(subcategory_id=level_id).all()
+    
+    elif category_level == 3:
+        questions = Question.query.filter_by(subject_id=level_id).all()
+
+    elif category_level == 4:
+        questions = Question.query.filter_by(unit_id=level_id).all()
+
+    if questions == None:
+        return jsonify({"message": "No questions found"})
+    random_questions = random.sample(questions, min(n, len(questions)))
+
+    question_data_list = []
+    for question in random_questions:
+        question_data = {
+            'id': question.id,
+            'question_text': question.question_text,
+            'option_a': question.option_a,
+            'option_b': question.option_b,
+            'option_c': question.option_c,
+            'option_d': question.option_d,
+            'option_e': question.option_e,
+            'tags': question.tags,
+            'correct_options': question.correct_options,
+            'explanation': question.explanation
+        }
+        question_data_list.append(question_data)
+    return jsonify({"count": len(question_data_list), "questions": question_data_list})
+
+@quiz_bp.route('/question/<int:question_id>', methods = ['GET'])
+def get_question_by_id(question_id):
+    """
+    """
+
+    question = Question.query.get(question_id)
+    if question:
+        return jsonify(question.serialize())
+
 @quiz_bp.route('/question/<int:question_id>/comments', methods=['GET'])
 def get_comments(question_id):
     """

@@ -4,35 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#9C27B0"
+    android:orientation="horizontal"
     android:padding="5dp">
 
     <TextView
         android:id="@+id/indexTextView"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginRight="5dp"
-        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
         android:text="2. "
-        android:textSize="12sp" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/subjectTextView"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginRight="5dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:text="Subject"
-        android:textSize="12sp" />
+        android:fontFamily="@font/aclonica"
+        android:gravity="center_horizontal"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp" />
 
     <EditText
         android:id="@+id/editTextNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="3"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:fontFamily="@font/chewy"
         android:gravity="center_vertical"
         android:inputType="number"
-        android:textSize="12sp" />
+        android:textColor="#FFFFFF"
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/updateQuestionNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/baseline_check_24" />
 
     <ImageView
         android:id="@+id/removeMockImageView"

@@ -38,17 +38,21 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
+    useremail = data.get('email')
     password = data.get('password')
+    username = None
+    stored_hashed_password = None
+    #useremail = None
 
-    userexists = User.query.filter_by(username=username).first()
-    stored_hashed_password = userexists.password.encode('utf-8')
-    print(stored_hashed_password)
-    
+    userexists = User.query.filter_by(email=useremail).first()
+    if userexists:
+        stored_hashed_password = userexists.password.encode('utf-8')
+        username = userexists.username
+        
     if userexists != None and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
         token_tenure = timedelta(days=7)
-        access_token = create_access_token(identity=username, fresh=True, expires_delta=token_tenure)
-        return jsonify({"access_token": access_token}), 200
+        access_token = create_access_token(identity=useremail, fresh=True, expires_delta=token_tenure)
+        return jsonify({"access_token": access_token, "username": username, "useremail": useremail, "message": "Success"}), 200
     return jsonify({"message": "Invalid credentials"}), 401
 
 

@@ -13,6 +13,10 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="root_url">http://18.116.70.55:8000</string>
+    <string name="root_url">http://10.0.2.2:5000</string>
     <string name="login_or_register">Login/Register</string>
+    <string name="quiz">Quiz</string>
+    <string name="score">Score</string>
+    <string name="corrections">Corrections</string>
+    <string name="menu_profile">Profile</string>
 </resources>

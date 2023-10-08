@@ -1,0 +1,90 @@
+def create_categories(json_data):
+    for category_data in json_data['categories']:
+        category = Category.query.filter_by(name=category_data['name']).first()
+
+        if category is None:
+            category = Category(name=category_data['name'])
+            db.session.add(category)
+
+        create_subcategories(category, category_data['subcategories'])
+
+    db.session.commit()
+
+# def create_categories(json_data):
+#     for category_data in json_data['categories']:
+#         category = Category(id=category_data['id'], name=category_data['name'])
+#         all_categories = Category.query.all()
+#         if category not in all_categories:
+#             db.session.add(category)
+#         create_subcategories(category, category_data['subcategories'])
+
+
+def create_subcategories(category, subcategory_data):
+    for subcategory_data in subcategory_data:
+        subcategory = Subcategory.query.filter_by(
+            name=subcategory_data['name']).first()
+
+        if subcategory is None:
+            subcategory = Subcategory(name=subcategory_data['name'], category=category)
+            db.session.add(subcategory)
+        create_subjects(subcategory, subcategory_data['subjects'])
+
+    db.session.commit()
+# def create_subcategories(category, subcategory_data):
+#     for subcategory_data in subcategory_data:
+#         subcategory = Subcategory(
+#             id=subcategory_data['id'], name=subcategory_data['name'], category=category)
+#         all_subcategories = Subcategory.query.all()
+#         if subcategory not in all_subcategories:
+#             db.session.add(subcategory)
+#         create_subjects(subcategory, subcategory_data['subjects'])
+
+
+def create_subjects(subcategory, subject_data):
+    for subject_data in subject_data:
+        subject = Subject.query.filter_by(name=subject_data['name']).first()
+
+        if subject is None:
+            subject = Subject(name=subject_data['name'], subcategory=subcategory)
+            db.session.add(subject)
+
+        create_units(subject, subject_data['units'])
+
+    db.session.commit()
+
+# def create_subjects(subcategory, subject_data):
+#     for subject_data in subject_data:
+#         subject = Subject(id=subject_data['id'], name=subject_data['name'],
+#                           subcategory=subcategory)
+#         all_subjects = Subject.query.all()
+#         if subject not in all_subjects:
+#             db.session.add(subject)
+#         create_units(subject, subject_data['units'])
+
+
+def create_units(subject, unit_datas):
+    for unit_data in unit_datas:
+        unit = Unit.query.filter_by(name=unit_data['name']).first()
+
+        if unit is None:
+            unit = Unit(name=unit_data['name'],
+                        subject=subject, tags=unit_data['tags'])
+            db.session.add(unit)
+            #print('create new unit')
+    #print('create new unit outside')
+    db.session.commit()
+
+# def create_units(subject, unit_datas):
+#     for unit_data in unit_datas:
+#         print(unit_data)
+#         unit = Unit(id=unit_data['id'], name=unit_data['name'],
+#                     subject=subject, tags=unit_data['tags'])
+#         all_units = Unit.query.all()
+#         if unit not in all_units:
+#             db.session.add(unit)
+
+
+def populate_database_from_json(json_data):
+    # json_data = json.load(json_file)
+    create_categories(json_data)
+    db.session.commit()

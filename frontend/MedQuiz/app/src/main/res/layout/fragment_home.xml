@@ -13,10 +13,9 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/buttonFreeStyle"
@@ -24,7 +23,35 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:text="Free style" />
+                android:text="Free style"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageMockStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:src="@drawable/img_mock_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageFreeStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/img_free_style" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/buttonMockStyle"
@@ -32,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                android:text="Mock style" />
+                android:text="Mock style"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -40,75 +68,203 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
+
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/useremail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/chewy"
                 android:gravity="center_horizontal"
                 android:text="Mock Setup"
                 android:textSize="18sp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/mockTimeHour"
+                <LinearLayout
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="#FF9800"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/hourUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_up_24" />
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/aclonica"
+                        android:maxLength="2"
+                        android:text="HH"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/hourValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:ems="2"
+                        android:fontFamily="@font/walter_turncoat"
+                        android:inputType="number"
+                        android:text="00"
+                        android:textAlignment="center" />
+
+                    <ImageView
+                        android:id="@+id/hourDown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_down_24" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="#FF5722"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/minuiteUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_up_24" />
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/aclonica"
+                        android:maxLength="2"
+                        android:text="MM"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/minuiteValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="2"
+                        android:fontFamily="@font/walter_turncoat"
+                        android:inputType="number"
+                        android:text="00"
+                        android:textAlignment="center" />
+
+                    <ImageView
+                        android:id="@+id/minuiteDown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_down_24" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="#FF9800"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/secondsUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_up_24" />
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/aclonica"
+                        android:maxLength="2"
+                        android:text="SS"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/secondsValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="2"
+                        android:fontFamily="@font/walter_turncoat"
+                        android:inputType="number"
+                        android:text="00"
+                        android:textAlignment="center" />
+
+                    <ImageView
+                        android:id="@+id/secondsDown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_arrow_drop_down_24" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="2"
-                    android:inputType="number" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Hour(s)" />
+                    <LinearLayout
+                        android:id="@+id/mockSubjectsLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"></LinearLayout>
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/mockTimeMin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="2"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Minuite(s)" />
-
-                <EditText
-                    android:id="@+id/mockTimeSec"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="2"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="sec(s)" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/mockSubjectsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <Button
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="Schedule Time" />
+
+                <CheckBox
+                    android:id="@+id/schedule_now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Now" />
+
+                <Button
+                    android:id="@+id/schedule_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="Pick Time/Date" />
+            </LinearLayout>
+
+            <ImageButton
                 android:id="@+id/startMockButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#FFFFFF"
+                android:scaleType="centerInside"
+                android:src="@drawable/start"
                 android:text="Start" />
 
         </LinearLayout>

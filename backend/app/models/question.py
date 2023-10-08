@@ -26,5 +26,19 @@ class Question(db.Model):
     comments = db.relationship('Comment', back_populates='question', cascade='all, delete-orphan')
 
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'question_text': self.question_text,
+            'option_a': self.option_a,
+            'option_b': self.option_b,
+            'option_c': self.option_c,
+            'option_d': self.option_d,
+            'option_e': self.option_e,
+            'correct_options': self.correct_options,
+            'explanation': self.explanation
+
+        }
+    
     def __repr__(self):
         return f'<Question {self.question_text}>'

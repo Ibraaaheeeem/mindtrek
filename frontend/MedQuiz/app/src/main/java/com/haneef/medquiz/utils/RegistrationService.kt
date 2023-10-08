@@ -8,7 +8,6 @@ class RegistrationService(url: String) {
 
     private val client = OkHttpClient()
 
-    // Replace with your registration endpoint URL
     private val registrationUrl = url
 
     fun registerUser(userData: UserData, callback: Callback) {
