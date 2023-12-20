@@ -1,4 +1,4 @@
-from flask import request, abort
+from flask import request, abort, jwt
 from functools import wraps
 import app
 

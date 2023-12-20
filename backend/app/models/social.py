@@ -55,6 +55,17 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'registration_date': self.registration_date,
+            'last_seen_date': self.last_seen_date,
+            'attempts_count': len(self.attempts),
+            'comments_count': len(self.comments)
+        }
 
 
 class MockSubject(db.Model):
@@ -94,6 +105,16 @@ class Attempt(db.Model):
         """
         self.subjects_taken.append(mock_subject)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'duration': self.duration,
+            'date_taken': self.date_taken,
+            'total_score': self.total_score,
+            'total_possible_score': self.total_possible_score,
+            'subjects_taken': self.subjects_taken
+        }
 
 exam_subjects = db.Table('exam_subjects',
                          db.Column('attempt_id', db.Integer, db.ForeignKey(

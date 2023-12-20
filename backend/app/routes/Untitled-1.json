@@ -1,0 +1,227 @@
+[
+  {
+    "name": "Food",
+    "item_count": 0,
+    "image_url": "https://example.com/food.png",
+    "children": [
+      {
+        "name": "Fruits",
+        "item_count": 0,
+        "image_url": "",
+        "children": [
+          {
+            "name": "Citrus Fruits",
+            "item_count": 0,
+            "image_url": "https://example.com/citrus-fruits.png",
+            "children": [
+              {
+                "name": "Oranges",
+                "item_count": 10,
+                "image_url": "https://example.com/oranges.png",
+                "children": []
+              },
+              {
+                "name": "Grapefruits",
+                "item_count": 8,
+                "image_url": "https://example.com/grapefruits.png",
+                "children": []
+              },
+              {
+                "name": "Lemons",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              },
+              {
+                "name": "Bananas",
+                "image_url": "https://example.com/bananas.png",
+                "children": []
+              },
+              {
+                "name": "Pawpaw",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              },
+              {
+                "name": "Pear",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              },
+              {
+                "name": "Avocado",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              },
+              {
+                "name": "Water mellon",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              },
+              {
+                "name": "Golden mellon",
+                "image_url": "https://example.com/lemons.png",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "Berries",
+            "item_count": 0,
+            "image_url": "https://example.com/berries.png",
+            "children": [
+              {
+                "name": "Strawberries",
+                "item_count": 12,
+                "image_url": "https://example.com/strawberries.png",
+                "children": []
+              },
+              {
+                "name": "Blueberries",
+                "item_count": 15,
+                "image_url": "https://example.com/blueberries.png",
+                "children": []
+              },
+              {
+                "name": "Dates",
+                "image_url": "https://example.com/lemons.png",
+                "children": [
+                  {
+                    "name": "Dry date",
+                    "item_count": 15,
+                    "image_url": "https://example.com/blueberries.png",
+                    "children": []
+                  },
+                  {
+                    "name": "Wet date",
+                    "item_count": 15,
+                    "image_url": "https://example.com/blueberries.png",
+                    "children": []
+                  },
+                  {
+                    "name": "Ajwa",
+                    "item_count": 15,
+                    "image_url": "https://example.com/blueberries.png",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Vegetables",
+        "item_count": 0,
+        "image_url": "https://example.com/vegetables.png",
+        "children": [
+          {
+            "name": "Leafy Greens",
+            "item_count": 0,
+            "image_url": "https://example.com/leafy-greens.png",
+            "children": [
+              {
+                "name": "Ayoyo",
+                "item_count": 7,
+                "image_url": "https://example.com/spinach.png",
+                "children": []
+              },
+              {
+                "name": "Alewu",
+                "item_count": 5,
+                "image_url": "https://example.com/kale.png",
+                "children": []
+              },
+              {
+                "name": "Cabbage",
+                "item_count": 5,
+                "image_url": "https://example.com/kale.png",
+                "children": []
+              },
+              {
+                "name": "Lettuce",
+                "item_count": 5,
+                "image_url": "https://example.com/kale.png",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "Root Vegetables",
+            "item_count": 0,
+            "image_url": "https://example.com/root-vegetables.png",
+            "children": [
+              {
+                "name": "Carrots",
+                "item_count": 10,
+                "image_url": "https://example.com/carrots.png",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Grains",
+        "item_count": 0,
+        "image_url": "https://example.com/grains.png",
+        "children": [
+          {
+            "name": "Rice",
+            "item_count": 0,
+            "image_url": "https://example.com/rice.png",
+            "children": [
+              {
+                "name": "White Rice",
+                "item_count": 10,
+                "image_url": "https://example.com/white-rice.png",
+                "children": []
+              },
+              {
+                "name": "Brown Rice",
+                "item_count": 8,
+                "image_url": "https://example.com/brown-rice.png",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "Wheat",
+            "item_count": 0,
+            "image_url": "https://example.com/wheat.png",
+            "children": [
+              {
+                "name": "Whole Wheat",
+                "item_count": 12,
+                "image_url": "https://example.com/whole-wheat.png",
+                "children": []
+              },
+              {
+                "name": "Durum Wheat",
+                "item_count": 15,
+                "image_url": "https://example.com/durum-wheat.png",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "Maize",
+            "item_count": 0,
+            "image_url": "https://example.com/grains.png",
+            "children": []
+          },
+          {
+            "name": "Millet",
+            "item_count": 0,
+            "image_url": "https://example.com/grains.png",
+            "children": []
+          },
+          {
+            "name": "Soya",
+            "item_count": 0,
+            "image_url": "https://example.com/grains.png",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

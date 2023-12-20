@@ -61,5 +61,6 @@ def login():
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()
+    userexists = User.query.filter_by(email=current_user).first()
     # You can fetch user data from your database here
-    return jsonify({"message": f"Welcome, {current_user}!"}), 200
+    return jsonify(userexists.serialize()), 200
