@@ -15,11 +15,7 @@ def jwt_required_for_all_routes():
             return jsonify({'error': 'Missing or invalid username'}), 401
 
         current_user = User.query.filter_by(username=username).first()
-        current_user_id = current_user.id
-        data = request.get_json()
-        g.question_id = data.get('question_id')
-        g.username = current_user
-        g.user_id = current_user_id
+        g.user = current_user
 
 jwt_required_for_all_routes()
 
@@ -28,15 +24,14 @@ def create_comment():
     try:
         data = request.get_json()
         text = data.get('text')
-        timestamp = data.get('timestamp') # Mock exam schedule
-        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S')
-        current_timestamp = datetime.now() # date object for immediate mock exam
-    
+        timestamp = data.get('timestamp')
+        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S') if timestamp else datetime.now()
+
         comment = Comment(
-            text = text,
-            question_id = g.question_id,
-            user_id = g.user_id,
-            timestamp = date_object if timestamp else current_timestamp
+            text=text,
+            question_id=data.get('question_id'),
+            user_id=g.user.id,
+            timestamp=date_object
         )
         db.session.add(comment)
         db.session.commit()
@@ -50,15 +45,12 @@ def edit_comment(comment_id):
     try:
         data = request.get_json()
         text = data.get('text')
-        
-        comment = Comment.query.get(comment_id)
-        timestamp = data.get('timestamp') # Mock exam schedule
-        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S')
-        current_timestamp = datetime.now() # date object for immediate mock exam
+        timestamp = data.get('timestamp')
+        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S') if timestamp else datetime.now()
 
+        comment = Comment.query.get(comment_id)
         comment.text = text
-        comment.timestamp = date_object if timestamp else current_timestamp
-    
+        comment.timestamp = date_object
         db.session.commit()
         return jsonify({'message': 'Comment edited successfully', 'comment_id': comment_id}), 201
 
@@ -81,21 +73,22 @@ def create_subcomment():
     try:
         data = request.get_json()
         text = data.get('text')
-        comment_id = data.get('comment_id')  # ID of the parent comment
+        comment_id = data.get('comment_id')
         timestamp = data.get('timestamp')
+        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S') if timestamp else datetime.now()
+
         comment = Comment.query.get(comment_id)
         if comment is None:
             return jsonify({'error': 'Parent comment does not exist'}), 404
 
         subcomment = Subcomment(
-            text=text, 
-            comment_id = comment.id,
-            user_id=g.user_id,
-            timestamp= timestamp,
-            )
+            text=text,
+            comment_id=comment.id,
+            user_id=g.user.id,
+            timestamp=date_object
+        )
         db.session.add(subcomment)
         db.session.commit()
-
         return jsonify({'message': 'Subcomment created successfully', 'subcomment_id': subcomment.id}), 201
 
     except Exception as e:
@@ -107,15 +100,15 @@ def edit_subcomment(subcomment_id):
         data = request.get_json()
         text = data.get('text')
         timestamp = data.get('timestamp')
+        date_object = datetime.strptime(timestamp, '%d-%m-%Y %H:%M:%S') if timestamp else datetime.now()
+
         subcomment = Subcomment.query.get(subcomment_id)
         if subcomment is None:
             return jsonify({'error': 'Subcomment does not exist'}), 404
 
-        subcomment.text = text,
-        subcomment.timestamp= timestamp,
-        
+        subcomment.text = text
+        subcomment.timestamp = date_object
         db.session.commit()
-
         return jsonify({'message': 'Subcomment edited successfully', 'subcomment_id': subcomment.id}), 201
 
     except Exception as e:

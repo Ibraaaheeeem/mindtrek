@@ -1,6 +1,7 @@
 from app import db 
 from sqlalchemy.dialects.postgresql import ARRAY
 
+
 class Category(db.Model):
     __tablename__ = 'categories'
 
@@ -9,21 +10,21 @@ class Category(db.Model):
     subcategories = db.relationship('Subcategory', backref='category', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
-        from ..models import Question
-        questions = Question.query.filter_by(category_id=self.id).all()
-        count = 0
-        for question in questions:
-            count += 1
         
         return {
             'id': self.id,
             'name': self.name,
             'subcategories': [subcategory.serialize() for subcategory in self.subcategories],
-            'nquestions': len(questions)
+            'nquestions': len(self.questions)
         }
 
     def __repr__(self):
         return f'<Category {self.name}>'
+
+    @property
+    def questions(self):
+        from ..models import Question
+        return db.session.query(Question).join(Subcategory).filter(Subcategory.category_id == self.id).all()
 
 
 class Subcategory(db.Model):
@@ -35,21 +36,21 @@ class Subcategory(db.Model):
     subjects = db.relationship('Subject', backref='subcategory', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
-        from ..models import Question
-        questions = Question.query.filter_by(subcategory_id=self.id).all()
-        count = 0
-        for question in questions:
-            count += 1
-        
         return {
             'id': self.id,
             'name': self.name,
             'subjects': [subject.serialize() for subject in self.subjects],
-            'nquestions': len(questions)
+            'nquestions': len(self.questions)
         }
 
     def __repr__(self):
         return f'<Subcategory {self.name}>'
+
+    @property
+    def questions(self):
+        from ..models import Question
+        return db.session.query(Question).filter_by(subcategory_id=self.id).all()
+
 
 class Subject(db.Model):
     __tablename__ = 'subjects'
@@ -60,20 +61,21 @@ class Subject(db.Model):
     units = db.relationship('Unit', backref='subject', lazy=True, cascade='all, delete-orphan')
 
     def serialize(self):
-        from ..models import Question
-        questions = Question.query.filter_by(subject_id=self.id).all()
-        count = 0
-        for question in questions:
-            count += 1
         return {
             'id': self.id,
             'name': self.name,
             'units': [unit.serialize() for unit in self.units],
-            'nquestions': len(questions)
+            'nquestions': len(self.questions)
         }
 
     def __repr__(self):
         return f'<Subject {self.name}>'
+
+    @property
+    def questions(self):
+        from ..models import Question
+        return db.session.query(Question).filter_by(subject_id=self.id).all()
+
 
 class Unit(db.Model):
     __tablename__ = 'units'
@@ -85,19 +87,17 @@ class Unit(db.Model):
     tags = db.Column(ARRAY(db.String))
     
     def serialize(self):
-        from ..models import Question
-        questions = Question.query.filter_by(unit_id=self.id).all()
-        count = 0
-        for question in questions:
-            count += 1
-        
-        
         return {
             'id': self.id,
             'name': self.name,
             'tags': self.tags,
-            'nquestions': len(questions)
+            'nquestions': len(self.questions)
         }
     
     def __repr__(self):
         return f'<Unit {self.name}>'
+
+    @property
+    def questions(self):
+        from ..models import Question
+        return db.session.query(Question).filter_by(unit_id=self.id).all()

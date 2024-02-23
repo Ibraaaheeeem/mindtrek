@@ -1,9 +1,9 @@
 import bcrypt
 from datetime import timedelta
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app import db, jwt
 from ..models.social import User
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -16,51 +16,47 @@ def register():
     registration_date = data.get('registration_date')
     last_seen_date = data.get('last_seen_date')
 
-    userexists = User.query.filter_by(username=username).first()
-    
-    if userexists is not None:
+    user_exists = User.query.filter_by(username=username).first()
+    if user_exists:
         return jsonify({"message": "User already exists"}), 400
 
-    hashedpw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
+    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
     new_user = User(
         username=username,
-        password=hashedpw.decode('utf-8'),
+        password=hashed_pw.decode('utf-8'),
         email=email,
         registration_date=registration_date,
         last_seen_date=last_seen_date
     )
-    print(hashedpw)
     db.session.add(new_user)
     db.session.commit()
 
     return jsonify({"message": "Registration successful"}), 201
 
-
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    useremail = data.get('email')
+    user_email = data.get('email')
     password = data.get('password')
     username = None
     stored_hashed_password = None
-    #useremail = None
 
-    userexists = User.query.filter_by(email=useremail).first()
-    if userexists:
-        stored_hashed_password = userexists.password.encode('utf-8')
-        username = userexists.username
+    user_exists = User.query.filter_by(email=user_email).first()
+    if user_exists:
+        stored_hashed_password = user_exists.password.encode('utf-8')
+        username = user_exists.username
         
-    if userexists != None and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
+    if user_exists and bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
         token_tenure = timedelta(days=7)
-        access_token = create_access_token(identity=useremail, fresh=True, expires_delta=token_tenure)
-        return jsonify({"access_token": access_token, "username": username, "useremail": useremail, "message": "Success"}), 200
+        access_token = create_access_token(identity=user_email, fresh=True, expires_delta=token_tenure)
+        return jsonify({"access_token": access_token, "username": username, "user_email": user_email, "message": "Success"}), 200
     return jsonify({"message": "Invalid credentials"}), 401
-
 
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()
-    userexists = User.query.filter_by(email=current_user).first()
-    # You can fetch user data from your database here
-    return jsonify(userexists.serialize()), 200
+    user_exists = User.query.filter_by(email=current_user).first()
+    if user_exists:
+        return jsonify(user_exists.serialize()), 200
+    return jsonify({"message": "User not found"}), 404
