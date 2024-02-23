@@ -18,7 +18,7 @@ def get_question():
     model = genai.GenerativeModel('gemini-pro')
     google_api_key = os.environ.get('GOOGLE_API_KEY')
     print(google_api_key)
-    genai.configure(api_key="AIzaSyCOTtlLG-FAV5cytNIGu-66mAfWamZ-ANs")
+    genai.configure(api_key=google_api_key)
     n = request.args.get('n')
     category = request.args.get('category')
     subcategory = request.args.get('subcategory')
