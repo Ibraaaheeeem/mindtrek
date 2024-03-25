@@ -41,6 +41,7 @@ def get_categories():
 # Endpoint to get subcategories based on the parent category
 @quizai_bp.route('/subcategories/<category_name>')
 def get_subcategories(category_name):
+    category_name = category_name.replace("%20", " ")
     for category in categories_json:
         if category['name'] == category_name and 'subcategories' in category:
             subcategories = [subcat['name'] for subcat in category['subcategories']]
@@ -50,6 +51,7 @@ def get_subcategories(category_name):
 # Endpoint to get subjects based on the parent subcategory
 @quizai_bp.route('/subjects/<subcategory_name>')
 def get_subjects(subcategory_name):
+    subcategory_name = subcategory_name.replace("%20", " ")
     for category in categories_json:
         if 'subcategories' in category:
             for subcategory in category['subcategories']:
@@ -61,6 +63,7 @@ def get_subjects(subcategory_name):
 # Endpoint to get units based on the parent subject
 @quizai_bp.route('/units/<subject_name>')
 def get_units(subject_name):
+    subject_name = subject_name.replace("%20", " ")
     for category in categories_json:
         if 'subcategories' in category:
             for subcategory in category['subcategories']:
@@ -74,6 +77,7 @@ def get_units(subject_name):
 # Endpoint to get subunits based on the parent unit
 @quizai_bp.route('/subunits/<unit_name>')
 def get_subunits(unit_name):
+    unit_name = unit_name.replace("%20", " ")
     for category in categories_json:
         if 'subcategories' in category:
             for subcategory in category['subcategories']:
@@ -89,6 +93,7 @@ def get_subunits(unit_name):
 # Endpoint to get tags based on the parent subunit
 @quizai_bp.route('/tags/<subunit_name>')
 def get_tags(subunit_name):
+    subunit_name = subunit_name.replace("%20", " ")
     for category in categories_json:
         if 'subcategories' in category:
             for subcategory in category['subcategories']:
