@@ -60,3 +60,14 @@ def profile():
     if user_exists:
         return jsonify(user_exists.serialize()), 200
     return jsonify({"message": "User not found"}), 404
+
+@auth_bp.route('/profile', methods=['DELETE'])
+@jwt_required()
+def delete_profile():
+    current_user = get_jwt_identity()
+    user_exists = User.query.filter_by(email=current_user).first()
+    if user_exists:
+        db.session.delete(user_exists)
+        db.session.commit()
+        return jsonify({"message": "User deleted successfully"}), 200
+    return jsonify({"message": "User not found"}), 404
